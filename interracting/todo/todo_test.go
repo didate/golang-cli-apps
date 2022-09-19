@@ -1,6 +1,8 @@
 package todo_test
 
 import (
+	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/didate/interracting/todo"
@@ -58,7 +60,34 @@ func TestDelete(t *testing.T){
 	if l[1].Task != tasks[2]{
 		t.Errorf("Expected %q, got %q instead", tasks[2], l[1].Task)
 	}
+}
 
-	
+func TestSaveAndGet(t *testing.T){
+	l1 := todo.List{}
+	l2 := todo.List{}
+
+	taskName := "New Task"
+	l1.Add(taskName)
+	if l1[0].Task != taskName{
+		t.Errorf("Expected %q, got %q instead.", taskName, l1[0].Task)
+	}
+
+	tf, err := ioutil.TempFile("","")
+	if err != nil {
+		t.Errorf("Error creating temp file : %s", err)
+	}
+	defer os.Remove(tf.Name())
+
+	if err := l1.Save(tf.Name()); err != nil {
+		t.Errorf("Error saving list to file : %s", err)
+	}
+
+	if err := l2.Get(tf.Name()); err!=nil{
+		t.Errorf("Error loading list from file : %s",err)
+	}
+
+	if l1[0].Task != l2[0].Task{
+		t.Errorf("Expected %s, got %s instead", l1[0].Task, l2[0].Task)
+	}
 }
 
