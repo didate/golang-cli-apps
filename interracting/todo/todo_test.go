@@ -1,7 +1,6 @@
 package todo_test
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -72,7 +71,7 @@ func TestSaveAndGet(t *testing.T){
 		t.Errorf("Expected %q, got %q instead.", taskName, l1[0].Task)
 	}
 
-	tf, err := ioutil.TempFile("","")
+	tf, err := os.CreateTemp("","")
 	if err != nil {
 		t.Errorf("Error creating temp file : %s", err)
 	}
