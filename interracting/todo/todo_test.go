@@ -23,27 +23,40 @@ func TestAdd(t *testing.T){
 
 func TestCompleted(t *testing.T){
 	l :=todo.List{}
-	l.Add("Here is a task")
-	l.Add("Here is a second task")
-	i:=2
-	l.Complete(i)
-	if !l[i-1].Done{
-		t.Errorf("Expected true, got %v instead", l[i-1].Done)
+	taskName := "New Task"
+	l.Add(taskName)
+	if l[0].Task != taskName{
+		t.Errorf("Expected %q, got %q instead.", taskName, l[0].Task)
+	}
+
+	if l[0].Done {
+		t.Errorf("New task should not be completed")
+	}
+
+	l.Complete(1)
+	if !l[0].Done{
+		t.Errorf("Expected true, got %v instead", l[0].Done)
 	}
 }
 
 func TestDelete(t *testing.T){
 	l :=todo.List{}
-	l.Add("Here is a task")
-	l.Add("Here is a second task")
-	third :="Here is a third task"
-	l.Add(third)
-	length := len(l)
-	i:=2
-	l.Delete(i)
+	tasks := []string{"Task 1", "Task 2", "Task 3"}
+	for _,task := range tasks {
+		l.Add(task)
+	}
+	if l[0].Task != tasks[0]{
+		t.Errorf("Expected %q, got %q instead.", tasks[0], l[0].Task)
+	}
 
-	if len(l) >= length {
-		t.Errorf("len after delete (%d) have to be less than inital len (%d)", len(l), length)
+	l.Delete(2)
+
+	if len(l) != 2 {
+		t.Errorf("Expected %q, got %q instead.", 2,len(l))
+	}
+
+	if l[1].Task != tasks[2]{
+		t.Errorf("Expected %q, got %q instead", tasks[2], l[1].Task)
 	}
 
 	
