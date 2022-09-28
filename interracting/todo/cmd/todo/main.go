@@ -7,17 +7,18 @@ import (
 
 	"github.com/didate/interracting/todo"
 )
-const todoFileName =".todo.json"
 
-func main(){
-	l:= &todo.List{}
+const todoFileName = ".todo.json"
 
-	if err := l.Get(todoFileName); err!= nil{
+func main() {
+	l := &todo.List{}
+
+	if err := l.Get(todoFileName); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	switch  {
+	switch {
 	case len(os.Args) == 1:
 		for _, item := range *l {
 			fmt.Println(item.Task)
@@ -25,7 +26,7 @@ func main(){
 	default:
 		item := strings.Join(os.Args[1:], " ")
 		l.Add(item)
-		if err:= l.Save(todoFileName); err!=nil{
+		if err := l.Save(todoFileName); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
