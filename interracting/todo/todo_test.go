@@ -38,6 +38,10 @@ func TestCompleted(t *testing.T){
 	if !l[0].Done{
 		t.Errorf("Expected true, got %v instead", l[0].Done)
 	}
+	err :=l.Complete(2)
+	if err == nil {
+		t.Errorf("An Error should be got")
+	}
 }
 
 func TestDelete(t *testing.T){
