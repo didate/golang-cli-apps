@@ -11,7 +11,7 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-cmd/todo/todo.exe
-cmd/todo/todo
-cmd/todo/.todo.json
+todo/cmd/todo/todo.exe
+todo/cmd/todo/todo
+todo/cmd/todo/.todo.json
 .todo.json
