@@ -25,6 +25,9 @@ func main() {
 	add := flag.Bool("add", false, "Add Task to the ToDo List")
 	list := flag.Bool("list", false, "List of all tasks")
 	complete := flag.Int("complete", 0, "Item to be completed")
+	completedTask := flag.Bool("completedTask", false, "List only completed task")
+	verbose := flag.Bool("verbose", false, "Item to be completed")
+
 	del := flag.Int("del", 0, "Item to be deleted")
 
 	flag.Parse()
@@ -42,7 +45,12 @@ func main() {
 
 	switch {
 	case *list:
-		fmt.Print(l)
+		printList(l,*verbose,*completedTask)
+		//fmt.Print(l)
+	case *verbose:
+		fmt.Println("-verbose flag must be combinated with -list flag")
+	case *completedTask:
+		fmt.Println("-completedTask flag must be combinated with -list flag")
 	case *complete > 0:
 		if err := l.Complete(*complete); err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -76,6 +84,27 @@ func main() {
 		os.Exit(1)
 	}
 
+}
+
+func printList(l *todo.List, verbose bool, completedTask bool)  {
+	formatted := ""
+
+	for k, t := range *l {
+		if completedTask && !t.Done{
+			continue
+		}
+		datetime :=""
+		prefix := "  "
+		if t.Done {
+			prefix = "X "
+		}
+		if verbose {
+			datetime = "--created :"+ t.CreatedAt.Format("2006-01-02 15:04")
+		}
+
+		formatted += fmt.Sprintf("%s%d: %s %v\n", prefix, k+1, t.Task, datetime)
+	}
+	fmt.Print(formatted)
 }
 
 func getTask(r io.Reader, args ...string) (string, error) {

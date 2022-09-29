@@ -16,6 +16,10 @@ var (
 )
 
 func TestMain(m *testing.M) {
+	if os.Getenv("TODO_FILENAME") != "" {
+        fileName = os.Getenv("TODO_FILENAME")
+    }
+
 	fmt.Println("Building tool ...")
 	if runtime.GOOS == "windows" {
 		binName += ".exe"
