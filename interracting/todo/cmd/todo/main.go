@@ -8,7 +8,7 @@ import (
 	"github.com/didate/interracting/todo"
 )
 
-const todoFileName = ".todo.json"
+var todoFileName = ".todo.json"
 
 func main() {
 
@@ -24,6 +24,10 @@ func main() {
 	complete := flag.Int("complete",0,"Item to be completed")
 
 	flag.Parse()
+
+	if os.Getenv("TODO_FILENAME") != ""{
+		todoFileName = os.Getenv("TODO_FILENAME")
+	}
 
 	l := &todo.List{}
 
@@ -44,7 +48,6 @@ func main() {
 			os.Exit(1)
 		}
 	case *task != "":
-		fmt.Println(*task)
 		l.Add(*task)
 		if err := l.Save(todoFileName); err != nil {
 			fmt.Fprintln(os.Stderr, err)
