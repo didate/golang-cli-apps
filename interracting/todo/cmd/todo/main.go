@@ -45,7 +45,7 @@ func main() {
 
 	switch {
 	case *list:
-		printList(l,*verbose,*completedTask)
+		printList(l, *verbose, *completedTask)
 		//fmt.Print(l)
 	case *verbose:
 		fmt.Println("-verbose flag must be combinated with -list flag")
@@ -71,7 +71,7 @@ func main() {
 			os.Exit(1)
 		}
 	case *del > 0:
-		if err:= l.Delete(*del); err != nil {
+		if err := l.Delete(*del); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
@@ -86,23 +86,23 @@ func main() {
 
 }
 
-func printList(l *todo.List, verbose bool, completedTask bool)  {
+func printList(l *todo.List, verbose bool, completedTask bool) {
 	formatted := ""
 
 	for k, t := range *l {
-		if completedTask && !t.Done{
+		if completedTask && !t.Done {
 			continue
 		}
-		datetime :=""
+		datetime := ""
 		prefix := "  "
 		if t.Done {
 			prefix = "X "
 		}
 		if verbose {
-			datetime = "--created :"+ t.CreatedAt.Format("2006-01-02 15:04")
+			datetime = "--created :" + t.CreatedAt.Format("2006-01-02 15:04")
 		}
 
-		formatted += fmt.Sprintf("%s%d: %s %v\n", prefix, k+1, t.Task, datetime)
+		formatted += fmt.Sprintf("%s%d: %s%v\n", prefix, k+1, t.Task, datetime)
 	}
 	fmt.Print(formatted)
 }

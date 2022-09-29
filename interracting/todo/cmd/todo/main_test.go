@@ -17,8 +17,8 @@ var (
 
 func TestMain(m *testing.M) {
 	if os.Getenv("TODO_FILENAME") != "" {
-        fileName = os.Getenv("TODO_FILENAME")
-    }
+		fileName = os.Getenv("TODO_FILENAME")
+	}
 
 	fmt.Println("Building tool ...")
 	if runtime.GOOS == "windows" {
@@ -72,12 +72,12 @@ func TestTodoCLI(t *testing.T) {
 		}
 	})
 	t.Run("DeleteTask", func(t *testing.T) {
-		cmd:= exec.Command(cmdPath, "-add", task2)
-		if err := cmd.Run(); err!=nil {
+		cmd := exec.Command(cmdPath, "-add", task2)
+		if err := cmd.Run(); err != nil {
 			t.Fatal(err)
 		}
 		cmd = exec.Command(cmdPath, "-del", "3")
-		if err := cmd.Run(); err!=nil {
+		if err := cmd.Run(); err != nil {
 			t.Fatal(err)
 		}
 	})
@@ -93,5 +93,5 @@ func TestTodoCLI(t *testing.T) {
 		}
 		os.Remove(fileName)
 	})
-	
+
 }
