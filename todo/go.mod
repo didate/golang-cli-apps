@@ -1,4 +1,4 @@
-module github.com/didate/interracting/todo
+module github.com/didate/todo
 
 go 1.19
 

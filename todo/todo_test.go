@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/didate/interracting/todo"
+	"github.com/didate/todo"
 )
 
 func TestAdd(t *testing.T) {

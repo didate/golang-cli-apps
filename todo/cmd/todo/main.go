@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/didate/interracting/todo"
+	"github.com/didate/todo"
 	"github.com/jedib0t/go-pretty/v6/table"
 )
 
