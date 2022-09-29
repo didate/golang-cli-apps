@@ -34,9 +34,7 @@ func main() {
 
 	switch {
 	case *list:
-		for _, item := range *l {
-			fmt.Println(item.Task)
-		}
+		fmt.Print(l)
 	case *complete >0:
 		if err:= l.Complete(*complete); err!=nil{
 			fmt.Fprintln(os.Stderr, err)
@@ -46,6 +44,7 @@ func main() {
 			os.Exit(1)
 		}
 	case *task != "":
+		fmt.Println(*task)
 		l.Add(*task)
 		if err := l.Save(todoFileName); err != nil {
 			fmt.Fprintln(os.Stderr, err)
