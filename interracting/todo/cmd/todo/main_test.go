@@ -67,6 +67,16 @@ func TestTodoCLI(t *testing.T) {
 			t.Fatal(err)
 		}
 	})
+	t.Run("DeleteTask", func(t *testing.T) {
+		cmd:= exec.Command(cmdPath, "-add", task2)
+		if err := cmd.Run(); err!=nil {
+			t.Fatal(err)
+		}
+		cmd = exec.Command(cmdPath, "-del", "3")
+		if err := cmd.Run(); err!=nil {
+			t.Fatal(err)
+		}
+	})
 	t.Run("ListTasks", func(t *testing.T) {
 		cmd := exec.Command(cmdPath, "-list")
 		out, err := cmd.CombinedOutput()
@@ -79,4 +89,5 @@ func TestTodoCLI(t *testing.T) {
 		}
 		os.Remove(fileName)
 	})
+	
 }
