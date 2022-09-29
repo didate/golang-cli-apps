@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/didate/interracting/todo"
+	"github.com/jedib0t/go-pretty/v6/table"
 )
 
 var todoFileName = ".todo.json"
@@ -24,6 +25,7 @@ func main() {
 
 	add := flag.Bool("add", false, "Add Task to the ToDo List")
 	list := flag.Bool("list", false, "List of all tasks")
+	formattedList := flag.Bool("formattedList", false, "List of all tasks")
 	complete := flag.Int("complete", 0, "Item to be completed")
 	completedTask := flag.Bool("completedTask", false, "List only completed task")
 	verbose := flag.Bool("verbose", false, "Item to be completed")
@@ -46,7 +48,8 @@ func main() {
 	switch {
 	case *list:
 		printList(l, *verbose, *completedTask)
-		//fmt.Print(l)
+	case *formattedList:
+		formattedPrintList(l)
 	case *verbose:
 		fmt.Println("-verbose flag must be combinated with -list flag")
 	case *completedTask:
@@ -105,6 +108,27 @@ func printList(l *todo.List, verbose bool, completedTask bool) {
 		formatted += fmt.Sprintf("%s%d: %s%v\n", prefix, k+1, t.Task, datetime)
 	}
 	fmt.Print(formatted)
+}
+
+func formattedPrintList(l *todo.List) {
+
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"#", "Task", "Created At", "Completed At", "Completed"})
+	t.AppendSeparator()
+
+	for k, tk := range *l {
+
+		prefix := "  "
+		if tk.Done {
+			prefix = "X "
+		}
+		t.AppendRow([]interface{}{k + 1, tk.Task, tk.CreatedAt.Format("2006-01-02 15:04"), tk.CompletedAt.Format("2006-01-02 15:04"), prefix})
+
+	}
+	t.SetStyle(table.StyleLight)
+	t.Render()
+
 }
 
 func getTask(r io.Reader, args ...string) (string, error) {
