@@ -74,14 +74,14 @@ func (l *List) Get(filename string) error {
 	return json.Unmarshal(file, l)
 }
 
-func (l *List) String() string{
-	formatted :=""
-	for k,t := range *l {
-		prefix :="  "
+func (l *List) String() string {
+	formatted := ""
+	for k, t := range *l {
+		prefix := "  "
 		if t.Done {
-			prefix ="X "
+			prefix = "X "
 		}
-		formatted+= fmt.Sprintf("%s%d: %s\n", prefix, k+1, t.Task)
+		formatted += fmt.Sprintf("%s%d: %s\n", prefix, k+1, t.Task)
 	}
 	return formatted
 }
