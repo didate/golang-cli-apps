@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"os"
-	"path/filepath"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday/v2"
@@ -26,34 +26,42 @@ const (
 </html>`
 )
 
-func main()  {
+func main() {
 	// Parse flags
-	filename := flag.String("file","","Markdown file to preview")
+	filename := flag.String("file", "", "Markdown file to preview")
 	flag.Parse()
 
-	if *filename==""{
+	if *filename == "" {
 		flag.Usage()
 		os.Exit(1)
 	}
-	if err:= run(*filename); err!=nil{
+	if err := run(*filename, os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func run(filename string) error {
+func run(filename string, out io.Writer) error {
 	input, err := os.ReadFile(filename)
 	if err != nil {
 		return err
 	}
 
 	htmlData := parseContent(input)
-	outFile := fmt.Sprintf("%s.html", filepath.Base(filename))
-	fmt.Println(outFile)
+	// create temp file and check for erros
+	temp, err := os.CreateTemp("", "mdp*.html")
+	if err != nil {
+		return err
+	}
+	if err := temp.Close(); err != nil {
+		return err
+	}
+	outFile := temp.Name()
+	fmt.Fprintln(out, outFile)
 	return saveHTML(outFile, htmlData)
 }
 
-func parseContent(input []byte) []byte{
+func parseContent(input []byte) []byte {
 	output := blackfriday.Run(input)
 	body := bluemonday.UGCPolicy().SanitizeBytes(output)
 
@@ -65,6 +73,6 @@ func parseContent(input []byte) []byte{
 	return buffer.Bytes()
 }
 
-func saveHTML(outFname string, data []byte) error{
+func saveHTML(outFname string, data []byte) error {
 	return os.WriteFile(outFname, data, 0644)
 }
