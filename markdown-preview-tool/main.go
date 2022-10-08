@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"html/template"
 	"io"
 	"os"
 	"os/exec"
@@ -14,44 +15,50 @@ import (
 	"github.com/russross/blackfriday/v2"
 )
 
-const (
-	header = `<!DOCTYPE html>
+const defaultTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown Preview Tool</title>
+    <title>{{.Title}}</title>
 </head>
-<body>`
-
-	footer = `</body>
+<body>{{.Body}}</body>
 </html>`
-)
+
+type content struct {
+	Title string
+	Body  template.HTML
+}
 
 func main() {
 	// Parse flags
 	filename := flag.String("file", "", "Markdown file to preview")
 	skipPreview := flag.Bool("s", false, "Skip auto-preview")
+	tFname := flag.String("t", "", "Alternate template name")
 	flag.Parse()
 
 	if *filename == "" {
 		flag.Usage()
 		os.Exit(1)
 	}
-	if err := run(*filename, os.Stdout, *skipPreview); err != nil {
+	if err := run(*filename, *tFname, os.Stdout, *skipPreview); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func run(filename string, out io.Writer, skipPreview bool) error {
+func run(filename, tFname string, out io.Writer, skipPreview bool) error {
 	input, err := os.ReadFile(filename)
 	if err != nil {
 		return err
 	}
 
-	htmlData := parseContent(input)
+	htmlData, err := parseContent(input, tFname)
+
+	if err != nil {
+		return err
+	}
 	// create temp file and check for erros
 	temp, err := os.CreateTemp("/tmp", "mdp*.html")
 	if err != nil {
@@ -62,7 +69,7 @@ func run(filename string, out io.Writer, skipPreview bool) error {
 	}
 	outFname := temp.Name()
 	fmt.Fprintln(out, outFname)
-	if err:= saveHTML(outFname, htmlData); err!=nil {
+	if err := saveHTML(outFname, htmlData); err != nil {
 		return err
 	}
 	if skipPreview {
@@ -72,33 +79,49 @@ func run(filename string, out io.Writer, skipPreview bool) error {
 	return preview(outFname)
 }
 
-func parseContent(input []byte) []byte {
+func parseContent(input []byte, tFname string) ([]byte, error) {
 	output := blackfriday.Run(input)
 	body := bluemonday.UGCPolicy().SanitizeBytes(output)
 
+	t, err := template.New("mdp").Parse(defaultTemplate)
+	if err != nil {
+		return nil, err
+	}
+	if tFname != "" {
+		t, err = template.ParseFiles(tFname)
+		if err != nil {
+			return nil, err
+		}
+	}
+	c := content{
+		Title: "Markdown Preview Tool",
+		Body:  template.HTML(body),
+	}
 	// creating html bloc
 	var buffer bytes.Buffer
-	buffer.WriteString(header)
-	buffer.Write(body)
-	buffer.WriteString(footer)
-	return buffer.Bytes()
+
+	// execute the template with the content type
+	if err := t.Execute(&buffer, c); err != nil {
+		return nil, err
+	}
+	return buffer.Bytes(), nil
 }
 
 func saveHTML(outFname string, data []byte) error {
 	return os.WriteFile(outFname, data, 0644)
 }
 
-func preview(fname string) error{
-	cName :=""
-	cParams:= []string{}
+func preview(fname string) error {
+	cName := ""
+	cParams := []string{}
 	switch runtime.GOOS {
 	case "linux":
-		cName="xdg-open"
+		cName = "xdg-open"
 	case "windows":
-		cName="cmd.exe"
+		cName = "cmd.exe"
 		cParams = []string{"/C", "start"}
 	case "darwin":
-		cName="open"
+		cName = "open"
 	default:
 		return fmt.Errorf("OS not supported")
 	}
@@ -107,10 +130,10 @@ func preview(fname string) error{
 
 	// locate executable in PATH
 	cPath, err := exec.LookPath(cName)
-	if err!=nil {
+	if err != nil {
 		return err
 	}
 	err = exec.Command(cPath, cParams...).Run()
-	time.Sleep(2*time.Second)
+	time.Sleep(2 * time.Second)
 	return err
 }
