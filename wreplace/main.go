@@ -35,17 +35,15 @@ func main() {
 func replace(text, old, new string, cSensitive bool) string {
 	pattern := `\b` + old + `\b`
 	if !cSensitive {
-		pattern =`(?i)\b` + old + `\b`
+		pattern = `(?i)\b` + old + `\b`
 	}
 	r := regexp.MustCompile(pattern)
 	return r.ReplaceAllString(text, new)
 }
 
 func fileReplace(fname, oFname, old, new string, cSensitive bool) error {
-		fmt.Println("debug")
-
 	file, err := os.Open(fname)
-	
+
 	if err != nil {
 		return err
 	}
@@ -55,10 +53,10 @@ func fileReplace(fname, oFname, old, new string, cSensitive bool) error {
 	scanner := bufio.NewScanner(file)
 
 	outFile, err := os.OpenFile(oFname, os.O_WRONLY|os.O_CREATE, 0644)
-	if err!=nil {
+	if err != nil {
 		return err
 	}
-	
+
 	writer := bufio.NewWriter(outFile)
 	defer writer.Flush()
 

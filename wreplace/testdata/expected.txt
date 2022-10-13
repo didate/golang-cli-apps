@@ -1,0 +1,8 @@
+A switch statement is a shorter way to write a sequence of if - else statements. It runs the first case whose value is equal to the condition expression.
+
+Python's switch is like the one in C, C++, Java, JavaScript, 
+and PHP, except that Python only runs the selected case, 
+not all the cases that follow. In effect, the break statement that is 
+needed at the end of each case in those languages is provided automatically in Python. 
+Another important difference is that Python's switch cases need not be constants, 
+and the values involved need not be integers.

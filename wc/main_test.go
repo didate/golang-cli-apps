@@ -34,5 +34,3 @@ func TestBytesCount(t *testing.T) {
 		t.Errorf("Expected %d, got %d instead", exp, res)
 	}
 }
-
-
